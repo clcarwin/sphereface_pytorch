@@ -40,14 +40,8 @@ def KFold(n=6000, n_folds=10, shuffle=False):
     return folds
 
 def eval_acc(threshold, diff):
-    y_true = []
-    y_predict = []
-    for d in diff:
-        same = 1 if float(d[2]) > threshold else 0
-        y_predict.append(same)
-        y_true.append(int(d[3]))
-    y_true = np.array(y_true)
-    y_predict = np.array(y_predict)
+    y_predict = np.int32(d[:,2]>threshold)
+    y_true = np.int32(d[:,3])
     accuracy = 1.0*np.count_nonzero(y_true==y_predict)/len(y_true)
     return accuracy
 
@@ -119,7 +113,10 @@ for i in range(6000):
 accuracy = []
 thd = []
 folds = KFold(n=6000, n_folds=10, shuffle=False)
-thresholds = np.arange(-1.0, 1.0, 0.005)
+#thresholds = np.arange(-1.0, 1.0, 0.005)
+# Follow SphereFace's implementation: https://github.com/wy1iu/sphereface/blob/master/test/code/evaluation.m
+thresholds = np.linspace(-10000, 10000, 10000+1)
+thresholds = thresholds/10000
 predicts = np.array(map(lambda line:line.strip('\n').split(), predicts))
 for idx, (train, test) in enumerate(folds):
     best_thresh = find_best_threshold(thresholds, predicts[train])
