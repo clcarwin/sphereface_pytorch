@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
-torch.backends.cudnn.bencmark = True
+torch.backends.cudnn.benchmark = True
 
 import os,sys,cv2,random,datetime
 import argparse
