@@ -1,5 +1,8 @@
 from __future__ import print_function
 
+import time
+print(time.ctime())
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -65,7 +68,7 @@ def find_best_threshold(thresholds, predicts):
 parser = argparse.ArgumentParser(description='PyTorch sphereface lfw')
 parser.add_argument('--net','-n', default='sphere20a', type=str)
 parser.add_argument('--lfw', default='../../dataset/face/lfw/lfw.zip', type=str)
-parser.add_argument('--model','-m', default='sphere20a.pth', type=str)
+parser.add_argument('--model','-m', default='model/sphere20a_20171020.pth', type=str)
 args = parser.parse_args()
 
 predicts=[]
@@ -126,3 +129,5 @@ for idx, (train, test) in enumerate(folds):
     accuracy.append(eval_acc(best_thresh, predicts[test]))
     thd.append(best_thresh)
 print('LFWACC={:.4f} std={:.4f} thd={:.4f}'.format(np.mean(accuracy), np.std(accuracy), np.mean(thd)))
+
+print(time.ctime())
