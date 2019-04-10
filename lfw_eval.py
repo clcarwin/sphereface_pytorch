@@ -1,7 +1,9 @@
+# -*-coding:utf-8-*-
 from __future__ import print_function
 
 import time
-print(time.ctime())
+t=time.time()
+print('开始：', time.ctime(), '\n')
 
 import torch
 import torch.nn as nn
@@ -111,7 +113,7 @@ for i in range(6000):
         imglist[i] = (imglist[i]-127.5)/128.0
 
     img = np.vstack(imglist)
-    img = Variable(torch.from_numpy(img).float(),volatile=True).cuda()
+    img = Variable(torch.from_numpy(img).float()).cuda()
     output = net(img)
     f = output.data
     f1,f2 = f[0],f[2]
@@ -128,6 +130,8 @@ for idx, (train, test) in enumerate(folds):
     best_thresh = find_best_threshold(thresholds, predicts[train])
     accuracy.append(eval_acc(best_thresh, predicts[test]))
     thd.append(best_thresh)
-print('LFWACC={:.4f} std={:.4f} thd={:.4f}'.format(np.mean(accuracy), np.std(accuracy), np.mean(thd)))
+print('结果：LFWACC={:.4f} std={:.4f} thd={:.4f}\n'.format(np.mean(accuracy), np.std(accuracy), np.mean(thd)))
 
-print(time.ctime())
+print('结束：',time.ctime())
+
+print('\n总运行时间: {:.2f} s'.format(time.time()-t))
