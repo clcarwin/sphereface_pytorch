@@ -1,4 +1,8 @@
+#-*-coding:utf-8-*-
 from __future__ import print_function
+import time
+t=time.time()
+print('开始：', time.ctime())
 
 import torch
 import torch.nn as nn
@@ -15,6 +19,7 @@ from dataset import ImageDataset
 from matlab_cp2tform import get_similarity_transform_for_cv2
 import net_sphere
 
+USE_CUDA = torch.cuda.is_available()
 
 parser = argparse.ArgumentParser(description='PyTorch sphereface')
 parser.add_argument('--net','-n', default='sphere20a', type=str)
@@ -22,7 +27,6 @@ parser.add_argument('--dataset', default='../../dataset/face/casia/casia.zip', t
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--bs', default=256, type=int, help='')
 args = parser.parse_args()
-use_cuda = torch.cuda.is_available()
 
 
 def alignment(src_img,src_pts):
@@ -104,17 +108,19 @@ def train(epoch,args):
         if img is None: break
         inputs = torch.from_numpy(img).float()
         targets = torch.from_numpy(label[:,0]).long()
-        if use_cuda: inputs, targets = inputs.cuda(), targets.cuda()
-
+        if USE_CUDA: inputs, targets = inputs.cuda(), targets.cuda()
         optimizer.zero_grad()
         inputs, targets = Variable(inputs), Variable(targets)
+
         outputs = net(inputs)
         loss = criterion(outputs, targets)
-        lossd = loss.data[0]
+        # lossd = loss.data[0]
+        lossd = loss.data.item()
         loss.backward()
         optimizer.step()
 
-        train_loss += loss.data[0]
+        # train_loss += loss.data[0]
+        train_loss += loss.data.item()
         outputs = outputs[0] # 0=cos_theta 1=phi_theta
         _, predicted = torch.max(outputs.data, 1)
         total += targets.size(0)
@@ -126,14 +132,19 @@ def train(epoch,args):
         batch_idx += 1
     print('')
 
+print('inside: config net at {}'.format(dt()))
 
-net = getattr(net_sphere,args.net)()
-# net.load_state_dict(torch.load('sphere20a_0.pth'))
-net.cuda()
+if USE_CUDA:
+    net = getattr(net_sphere,args.net)()
+    # net.load_state_dict(torch.load('sphere20a_0.pth'))
+    net.cuda()
+else:
+    net = getattr(net_sphere,args.net)()
+
 criterion = net_sphere.AngleLoss()
 
+print('inside: start train model {}'.format(dt()))
 
-print('start: time={}'.format(dt()))
 for epoch in range(0, 20):
     if epoch in [0,10,15,18]:
         if epoch!=0: args.lr *= 0.1
@@ -142,5 +153,8 @@ for epoch in range(0, 20):
     train(epoch,args)
     save_model(net, '{}_{}.pth'.format(args.net,epoch))
 
-print('finish: time={}\n'.format(dt()))
+print('inside: finish train model at {}\n'.format(dt()))
 
+print('结束：',time.ctime())
+
+print('\n总运行时间: {:.2f} s'.format(time.time()-t))

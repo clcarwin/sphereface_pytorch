@@ -67,6 +67,10 @@ class AngleLoss(nn.Module):
         self.lamb = 1500.0
 
     def forward(self, input, target):
+        """
+
+        :type input: object
+        """
         self.it += 1
         cos_theta,phi_theta = input
         target = target.view(-1,1) #size=(B,1)
@@ -81,7 +85,7 @@ class AngleLoss(nn.Module):
         output[index] -= cos_theta[index]*(1.0+0)/(1+self.lamb)
         output[index] += phi_theta[index]*(1.0+0)/(1+self.lamb)
 
-        logpt = F.log_softmax(output)
+        logpt = F.log_softmax(output, dim=1)
         logpt = logpt.gather(1,target)
         logpt = logpt.view(-1)
         pt = Variable(logpt.data.exp())
