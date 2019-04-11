@@ -32,3 +32,6 @@ python lfw_eval.py --model model/sphere20a_20171020.pth
 
 # References
 [sphereface](https://github.com/wy1iu/sphereface)
+
+# result
+![result](images/result.png)
