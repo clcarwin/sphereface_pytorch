@@ -17,6 +17,7 @@ tar zxf lfw.tgz; cd lfw; zip -r ../lfw.zip *; cd ..
 # lfw evaluation
 python lfw_eval.py --model model/sphere20a_20171020.pth
 ```
+lfw file is [here](http://vis-www.cs.umass.edu/lfw/)
 
 # Pre-trained models
 | Model name      | LFW accuracy | Training dataset |
