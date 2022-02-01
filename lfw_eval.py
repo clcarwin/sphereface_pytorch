@@ -103,9 +103,9 @@ with open('data/pairs.txt') as f:
         img2 = alignment(cv2.imdecode(np.frombuffer(zfile.read(name2),np.uint8),1),landmark[name2])
 
         imglist = [img1,cv2.flip(img1,1),img2,cv2.flip(img2,1)]
-        for i in range(len(imglist)):
-            imglist[i] = imglist[i].transpose(2, 0, 1).reshape((1,3,112,96))
-            imglist[i] = (imglist[i]-127.5)/128.0
+        for i, image in imglist:
+            image = image.transpose(2, 0, 1).reshape((1,3,112,96))
+            imglist[i] = (image - 127.5) / 128.0
 
         img = np.vstack(imglist)
         img = Variable(torch.from_numpy(img).float(),volatile=True).cuda()
