@@ -8,6 +8,7 @@ Created on Tue Jul 11 06:54:28 2017
 import numpy as np
 from numpy.linalg import inv, norm, lstsq
 from numpy.linalg import matrix_rank as rank
+import copy
 
 
 """
@@ -404,7 +405,7 @@ def findSimilarity(uv, xy, options=None):
     # Solve for trans2
 
     # manually reflect the xy data across the Y-axis
-    xyR = xy
+    xyR = copy.deepcopy(xy)
     xyR[:, 0] = -1 * xyR[:, 0]
 
     trans2r, trans2r_inv = findNonreflectiveSimilarity(uv, xyR, options)
